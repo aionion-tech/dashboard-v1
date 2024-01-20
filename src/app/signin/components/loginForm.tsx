@@ -1,69 +1,60 @@
-"use client";
-import { useFormState } from "react-dom";
 import { authenticate } from "@/app/lib/actions";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function LoginForm() {
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+  const handleSubmit = async (data: FormData) => {
+    "use server";
+    const result = await authenticate("signin", data);
+
+    console.log("component - signin", result);
+  };
 
   return (
-    <form action={dispatch} className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className={`mb-3 text-2xl`}>Please log in to continue.</h1>
-        <div className="w-full">
-          <div>
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Enter your email address"
-                required
-              />
+    <form action={handleSubmit} className="w-full h-full">
+      <Card className="w-full h-full">
+        <CardContent className="flex p-8 min-h-96 h-full">
+          <div className="w-1/2 flex flex-col justify-between">
+            <h1>SIGNIN</h1>
+            <p>
+              Now III can't be responsible if I get you in trouble now. So
+              you're too irresistable. yeah that's for sure
+            </p>
+          </div>
+          <div className="w-1/2 flex items-center justify-center">
+            <div className="w-[70%]">
+              <div className="mb-4">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email address"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <div>
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    name="password"
+                    placeholder="Enter password"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              </div>
+              <Button className="w-full">
+                <span>Log in</span>
+              </Button>
             </div>
           </div>
-          <div className="mt-4">
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                required
-                minLength={6}
-              />
-            </div>
-          </div>
-        </div>
-        <Button>
-          <span>Log in</span>
-        </Button>
-        <div
-          className="flex h-8 items-end space-x-1"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {errorMessage && (
-            <>
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            </>
-          )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </form>
   );
 }

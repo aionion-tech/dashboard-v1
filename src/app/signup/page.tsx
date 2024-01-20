@@ -1,10 +1,10 @@
-import LoginForm from "./components/loginForm";
+import SignupForm from "./components/signupForm";
 
 export default async function Signin() {
   return (
     <main className="p-8 flex-grow flex">
       <section className="flex-grow">
-        <LoginForm />
+        <SignupForm />
       </section>
     </main>
   );
