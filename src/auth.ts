@@ -1,7 +1,12 @@
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import { authConfig } from "./auth.config";
+
+interface ExtendedUser extends User {
+  accessToken?: string;
+  refreshToken?: string;
+}
 
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -11,6 +16,19 @@ export const { auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/signin",
     signOut: "/signout",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.accessToken = (user as ExtendedUser).accessToken;
+        token.refreshToken = (user as ExtendedUser).refreshToken;
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      return session;
+    },
   },
   providers: [
     Credentials({
@@ -28,11 +46,27 @@ export const { auth, signIn, signOut } = NextAuth({
           })
           .parse(credentials);
 
-        const user = { id: "123", email, password };
+        const response = await fetch(
+          "http://localhost:3001/auth/api/v1/auth/login",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          }
+        );
 
-        if (!user) return null;
+        const data = await response.json();
 
-        return user;
+        if (response.ok && data.accessToken) {
+          return {
+            id: "123",
+            email,
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+          } as ExtendedUser;
+        }
+
+        return null;
       },
     }),
   ],
