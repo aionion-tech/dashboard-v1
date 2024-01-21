@@ -8,7 +8,7 @@ import { Button } from "./button";
 export function MainNav() {
   const handleSignOut = async () => {
     "use server";
-    await signOut({ redirectTo: "http://localhost:3000/" });
+    await signOut({ redirectTo: "http://localhost:3002/" });
   };
 
   return (

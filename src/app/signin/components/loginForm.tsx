@@ -1,15 +1,18 @@
+"use client";
 import { authenticate } from "@/app/lib/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 export default function LoginForm() {
   const handleSubmit = async (data: FormData) => {
-    "use server";
     const result = await authenticate("signin", data);
 
-    console.log("component - signin", result);
+    if (result === "Invalid credentials.") {
+      return toast.error("Invalid credentials.");
+    }
   };
 
   return (

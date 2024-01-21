@@ -15,20 +15,17 @@ export default function LoginForm() {
 
     const formData = new FormData(event.currentTarget);
 
-    const response = await fetch(
-      "http://localhost:3001/auth/api/v1/auth/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formData.get("username"),
-          email: formData.get("email"),
-          password: formData.get("password"),
-        }),
-      }
-    );
+    const response = await fetch("http://localhost:3000/api/v1/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: formData.get("username"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+      }),
+    });
 
     if (response.ok) {
       toast.success("Account created successfully");

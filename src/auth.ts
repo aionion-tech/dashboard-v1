@@ -47,7 +47,7 @@ export const { auth, signIn, signOut } = NextAuth({
           .parse(credentials);
 
         const response = await fetch(
-          "http://localhost:3001/auth/api/v1/auth/login",
+          "http://localhost:3000/api/v1/auth/signin",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
