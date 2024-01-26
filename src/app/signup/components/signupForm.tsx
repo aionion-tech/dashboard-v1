@@ -42,8 +42,6 @@ export default function LoginForm() {
     } else {
       toast.error(data.message);
     }
-
-    console.log(data);
   };
 
   return (
