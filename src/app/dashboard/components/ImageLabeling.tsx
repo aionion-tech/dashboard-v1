@@ -43,6 +43,15 @@ const ImageCanvas: React.FC<Props> = ({
 
   const handleMouseUp = () => {
     if (!currentAnnotation) return;
+    const MIN_WIDTH = 10;
+    const MIN_HEIGHT = 10;
+    const width = Math.abs(currentAnnotation.x2 - currentAnnotation.x1);
+    const height = Math.abs(currentAnnotation.y2 - currentAnnotation.y1);
+
+    if (width < MIN_WIDTH && height < MIN_HEIGHT) {
+      setCurrentAnnotation(null);
+      return;
+    }
 
     const finalAnnotation = {
       x1: Math.min(currentAnnotation.x1, currentAnnotation.x2),
@@ -55,6 +64,11 @@ const ImageCanvas: React.FC<Props> = ({
     const newAnnotations = [...annotations, finalAnnotation];
     onAnnotationsChange(newAnnotations);
     setCurrentAnnotation(null);
+  };
+
+  const handleAnnotationClick = (index: number) => {
+    const newAnnotations = annotations.filter((_, i) => i !== index);
+    onAnnotationsChange(newAnnotations);
   };
 
   useEffect(() => {
@@ -104,6 +118,7 @@ const ImageCanvas: React.FC<Props> = ({
               height={Math.abs(annotation.y2 - annotation.y1)}
               stroke="red"
               fill="rgba(255, 0, 0, 0.08)"
+              onClick={() => handleAnnotationClick(i)}
             />
             <Text
               x={annotation.x1}
@@ -139,6 +154,7 @@ const ImageCanvas: React.FC<Props> = ({
               verticalAlign="middle"
               offsetX={(annotation.x2 - annotation.x1) / 7}
               offsetY={7}
+              onClick={() => handleAnnotationClick(i)}
             />
           </React.Fragment>
         ))}

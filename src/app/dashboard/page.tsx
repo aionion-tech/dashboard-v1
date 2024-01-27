@@ -95,6 +95,7 @@ export default function Dashboard() {
           <div className="flex flex-col items-start">
             {labels.map((label) => (
               <Button
+                key={label}
                 onClick={handleSelectLabel.bind(null, label)}
                 className="mb-2 w-full"
                 variant={activeLabel === label ? "default" : "secondary"}
