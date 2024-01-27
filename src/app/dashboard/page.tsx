@@ -46,6 +46,33 @@ export default function Dashboard() {
   const [imageItems, setImageItems] = useState<ImageItem[]>(data);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
+  const [maskOverlayUrls, setMaskOverlayUrls] = useState<any[]>([]);
+  const [maskImages, setMaskImages] = useState<any[]>([]);
+  const [samResult, setSamResult] = useState<boolean[][] | null>(null);
+
+  const getSamResult = async ({
+    imageUrl,
+    bbox,
+  }: // centerPoint,
+  {
+    imageUrl: string;
+    bbox: number[];
+    // centerPoint: number[];
+  }) => {
+    const response = await fetch("http://localhost:5000/process", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ imageUrl, bbox }),
+    });
+
+    const data = await response.json();
+
+    setSamResult(data.result);
+    // console.log(data);
+  };
+
   const handleAnnotationsChange = (newAnnotations: Annotation[]) => {
     const newImageItems = [...imageItems];
     newImageItems[selectedImageIndex].annotations = newAnnotations;
@@ -57,6 +84,9 @@ export default function Dashboard() {
       return;
     }
 
+    setMaskOverlayUrls([]);
+    setMaskImages([]);
+    setSamResult(null);
     setSelectedImageIndex(selectedImageIndex + 1);
   };
 
@@ -65,6 +95,9 @@ export default function Dashboard() {
       return;
     }
 
+    setMaskOverlayUrls([]);
+    setMaskImages([]);
+    setSamResult(null);
     setSelectedImageIndex(selectedImageIndex - 1);
   };
 
@@ -81,6 +114,12 @@ export default function Dashboard() {
             annotations={imageItems[selectedImageIndex].annotations}
             onAnnotationsChange={handleAnnotationsChange}
             activeLabel={activeLabel}
+            maskOverlayUrls={maskOverlayUrls}
+            setMaskOverlayUrls={setMaskOverlayUrls}
+            maskImages={maskImages}
+            setMaskImages={setMaskImages}
+            samResult={samResult}
+            getSamResult={getSamResult}
           />
         </div>
         <div className="w-1/4">
