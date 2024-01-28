@@ -7,11 +7,7 @@ import { Button } from "./button";
 
 export async function MainNav() {
   // I fucking hate next-auth
-  const session = (await auth()) as {
-    user: {
-      email: string;
-    };
-  };
+  const session = (await auth()) as any;
 
   const handleSignOut = async () => {
     "use server";
@@ -46,9 +42,19 @@ export async function MainNav() {
         )}
 
         {session && (
-          <form action={handleSignOut}>
-            <Button className="text-background font-bold">Sign out</Button>
-          </form>
+          <>
+            <form action={handleSignOut}>
+              <Button className="text-background font-bold">Sign out</Button>
+            </form>
+            <Link
+              href={`/dashboard`}
+              className={cn(
+                "flex items-center text-sm font-medium text-muted-foreground"
+              )}
+            >
+              Dashobard
+            </Link>
+          </>
         )}
       </nav>
     </div>

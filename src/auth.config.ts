@@ -1,6 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 
-const protectedRoutes = ["/dashobard", "/"];
+const protectedRoutes = ["/dashboard"];
 const authRoutes = ["/signin", "/signup"];
 
 export const authConfig = {
@@ -10,13 +10,11 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-
       if (isLoggedIn && authRoutes.includes(nextUrl.pathname)) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
+        return Response.redirect(new URL(`/`, nextUrl));
       }
-
       const isProtectedRoute = protectedRoutes.some((route) => {
-        return nextUrl.pathname === route;
+        return nextUrl.pathname.includes(route);
       });
 
       if (isProtectedRoute) {

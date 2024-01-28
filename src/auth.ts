@@ -4,8 +4,11 @@ import { z } from "zod";
 import { authConfig } from "./auth.config";
 
 interface ExtendedUser extends User {
+  userId?: string;
   accessToken?: string;
   refreshToken?: string;
+  email?: string;
+  workspaceId?: string;
 }
 
 export const { auth, signIn, signOut } = NextAuth({
@@ -20,13 +23,24 @@ export const { auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        console.log(user);
+        token.userId = (user as ExtendedUser).userId;
         token.accessToken = (user as ExtendedUser).accessToken;
         token.refreshToken = (user as ExtendedUser).refreshToken;
+        token.email = (user as ExtendedUser).email;
+        token.workspaceId = (user as ExtendedUser).workspaceId;
       }
 
       return token;
     },
     async session({ session, token }) {
+      // NEXT-AUTH IS A PIECE OF MALWARE. FIND ANOTHER LIBRARY.
+      (session as any).userId = token.userId;
+      (session as any).accessToken = token.accessToken;
+      (session as any).refreshToken = token.refreshToken;
+      (session as any).email = token.email;
+      (session as any).workspaceId = token.workspaceId;
+
       return session;
     },
   },
@@ -59,10 +73,12 @@ export const { auth, signIn, signOut } = NextAuth({
 
         if (response.ok && data.accessToken) {
           return {
-            id: "123",
+            id: `${data.userId}`,
+            userId: data.userId,
             email,
             accessToken: data.accessToken,
             refreshToken: data.refreshToken,
+            workspaceId: data.workspaceId,
           } as ExtendedUser;
         }
 

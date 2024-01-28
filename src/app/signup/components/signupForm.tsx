@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
 
-export default function LoginForm() {
+export default function SignupForm() {
   const router = useRouter();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
