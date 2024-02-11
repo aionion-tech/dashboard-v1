@@ -1,4 +1,3 @@
-import { getAuthorizationHeader } from "@/utils/getAuthorizationHeader";
 import axios, { AxiosInstance } from "axios";
 
 export class AuthService {
@@ -42,16 +41,6 @@ export class AuthService {
           refreshToken: res.data.refreshToken,
           expiredAt: res.data.accessTokenExpiresIn,
         };
-      });
-  };
-
-  getMe = (userId: string) => {
-    return this.instance
-      .get(`/users/${userId}`, {
-        headers: getAuthorizationHeader(),
-      })
-      .then((res) => {
-        return res.data;
       });
   };
 }
