@@ -47,49 +47,11 @@ export async function signupAction({
   return user as User;
 }
 
-export async function createWorkspace(formData: FormData) {
-  try {
-    const response = await fetch("http://localhost:3000/api/v1/workspace", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: formData.get("name"),
-      }),
-    });
+export async function signoutAction() {
+  cookies().delete("id");
+  cookies().delete("email");
+  cookies().delete("accessToken");
+  cookies().delete("refreshToken");
 
-    const data = await response.json();
-
-    console.log(data);
-    redirect(`/`);
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
-
-export async function createProject(formData: FormData, workspaceId: string) {
-  try {
-    const response = await fetch(
-      `http://localhost:3000/api/v1/project/${workspaceId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.get("name"),
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    console.log(data);
-    redirect(`/`);
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  redirect("/");
 }

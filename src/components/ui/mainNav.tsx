@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { cookies } from "next/headers";
+import { signoutAction } from "@/app/lib/actions/auth.actions";
 
 export async function MainNav() {
   const cookieStore = cookies();
@@ -11,6 +12,7 @@ export async function MainNav() {
 
   const handleSignOut = async () => {
     "use server";
+    await signoutAction();
   };
 
   return (
