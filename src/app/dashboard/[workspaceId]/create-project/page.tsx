@@ -1,14 +1,20 @@
-import { createProject } from "@/app/lib/actions";
+import { createProjectAction } from "@/app/lib/actions/project.action";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { redirect } from "next/navigation";
 
 export default function CreateProject({ params }: any) {
   const handleSubmit = async (data: FormData) => {
     "use server";
 
-    const response = await createProject(data, params.workspaceId);
+    await createProjectAction({
+      workspaceId: params.workspaceId,
+      name: data.get("name") as string,
+    });
+
+    redirect(`/dashboard/${params.workspaceId}/projects`);
   };
   return (
     <main className="p-8 flex-grow">

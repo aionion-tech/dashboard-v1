@@ -2,16 +2,15 @@ import * as React from "react";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
-import { auth, signOut } from "@/auth";
 import { Button } from "./button";
+import { cookies } from "next/headers";
 
 export async function MainNav() {
-  // I fucking hate next-auth
-  const session = (await auth()) as any;
+  const cookieStore = cookies();
+  const userId = cookieStore.get("id")?.value;
 
   const handleSignOut = async () => {
     "use server";
-    await signOut({ redirectTo: "http://localhost:3002/" });
   };
 
   return (
@@ -20,7 +19,7 @@ export async function MainNav() {
         <span className="inline-block font-bold">AIONION</span>
       </Link>
       <nav className="flex gap-6">
-        {!session && (
+        {!userId && (
           <>
             <Link
               href="/signin"
@@ -41,7 +40,7 @@ export async function MainNav() {
           </>
         )}
 
-        {session && (
+        {userId && (
           <>
             <form action={handleSignOut}>
               <Button className="text-background font-bold">Sign out</Button>

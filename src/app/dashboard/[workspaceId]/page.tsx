@@ -1,26 +1,12 @@
-import { auth } from "@/auth";
+import { getProjectsAction } from "@/app/lib/actions/project.action";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function Workspace({ params }: any) {
-  const session = (await auth()) as any;
-  const getProjects = async () => {
-    const res = await fetch(
-      `http://localhost:3000/api/v1/project/${params.workspaceId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session!.accessToken}`,
-        },
-      }
-    );
-    return (await res.json()).projects;
-  };
+  const projects = await getProjectsAction({
+    workspaceId: params.workspaceId,
+  });
 
-  const projects = await getProjects();
-
-  console.log(projects);
   return (
     <main className="p-8 flex-grow">
       <section className="flex w-full flex-col">

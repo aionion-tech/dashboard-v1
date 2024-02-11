@@ -1,20 +1,23 @@
-import { createWorkspaceAction } from "@/app/lib/actions/workspace.action";
+import { createDatasetAction } from "@/app/lib/actions/dataset.actions";
+import { createProjectAction } from "@/app/lib/actions/project.action";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { redirect } from "next/navigation";
 
-export default async function CreateWorkspace() {
+export default function CreateDataset({ params }: any) {
   const handleSubmit = async (data: FormData) => {
     "use server";
-    await createWorkspaceAction({
+
+    await createDatasetAction({
+      workspaceId: params.workspaceId,
+      projectId: params.projectid,
       name: data.get("name") as string,
     });
 
-    redirect("/dashboard");
+    redirect(`/dashboard/${params.workspaceId}/${params.projectid}`);
   };
-
   return (
     <main className="p-8 flex-grow">
       <section className="flex w-full">
@@ -24,12 +27,12 @@ export default async function CreateWorkspace() {
               <div className="w-full flex items-center justify-center">
                 <div className="w-[70%]">
                   <div className="mb-4">
-                    <Label htmlFor="name">Workspace name</Label>
+                    <Label htmlFor="name">Dataset name</Label>
                     <Input
                       id="name"
                       type="name"
                       name="name"
-                      placeholder="Enter workspace name"
+                      placeholder="Enter dataset name"
                       required
                     />
                   </div>

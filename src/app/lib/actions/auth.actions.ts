@@ -1,33 +1,58 @@
 "use server";
-
-import { AuthError } from "next-auth";
-import { auth, signIn } from "../../../auth";
+import { authService } from "@/services";
 import { redirect } from "next/navigation";
+import { User } from "@/types/user";
+import { cookies } from "next/headers";
 
-export async function authenticate(_: string | undefined, formData: FormData) {
-  try {
-    await signIn("credentials", formData);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return "Invalid credentials.";
-        default:
-          return "Something went wrong.";
-      }
-    }
-    throw error;
-  }
+export async function loginAction({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) {
+  const user = await authService.signin(email, password);
+
+  Object.keys(user).forEach((key: string) => {
+    const value = (user as any)[key];
+
+    cookies().set(key, value, {
+      secure: true,
+      path: "/",
+      sameSite: "lax",
+    });
+  });
+
+  return user as User;
+}
+
+export async function signupAction({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) {
+  const user = await authService.signup(email, password);
+
+  Object.keys(user).forEach((key: string) => {
+    const value = (user as any)[key];
+
+    cookies().set(key, value, {
+      secure: true,
+      path: "/",
+      sameSite: "lax",
+    });
+  });
+  return user as User;
 }
 
 export async function createWorkspace(formData: FormData) {
-  const session = (await auth()) as any;
   try {
     const response = await fetch("http://localhost:3000/api/v1/workspace", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
       },
       body: JSON.stringify({
         name: formData.get("name"),
@@ -45,7 +70,6 @@ export async function createWorkspace(formData: FormData) {
 }
 
 export async function createProject(formData: FormData, workspaceId: string) {
-  const session = (await auth()) as any;
   try {
     const response = await fetch(
       `http://localhost:3000/api/v1/project/${workspaceId}`,
@@ -53,7 +77,6 @@ export async function createProject(formData: FormData, workspaceId: string) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.accessToken}`,
         },
         body: JSON.stringify({
           name: formData.get("name"),

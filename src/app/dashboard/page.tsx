@@ -1,21 +1,9 @@
-import { auth } from "@/auth";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
+import { getWorkspacesAction } from "../lib/actions/workspace.action";
 
 export default async function Dashboard() {
-  const session = (await auth()) as any;
-
-  const getUserWorkspaces = async () => {
-    const res = await fetch("http://localhost:3000/api/v1/workspace", {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    });
-    const workspaces = await res.json();
-    return workspaces.userWorkspaces;
-  };
-
-  const workspaces = await getUserWorkspaces();
+  const workspaces = await getWorkspacesAction();
 
   return (
     <main className="p-8 flex-grow">

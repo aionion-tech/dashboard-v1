@@ -1,17 +1,24 @@
 "use client";
-import { authenticate } from "@/app/lib/actions";
+import { loginAction } from "@/app/lib/actions/auth.actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function LoginForm() {
-  const handleSubmit = async (data: FormData) => {
-    const result = await authenticate("signin", data);
+  const router = useRouter();
 
-    if (result === "Invalid credentials.") {
-      return toast.error("Invalid credentials.");
+  const handleSubmit = async (data: FormData) => {
+    const user = await loginAction({
+      email: data.get("email") as string,
+      password: data.get("password") as string,
+    });
+
+    if (user) {
+      toast.success("Login successful");
+      router.push("/dashboard");
     }
   };
 

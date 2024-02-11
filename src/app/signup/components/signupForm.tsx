@@ -5,47 +5,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
+import { signupAction } from "@/app/lib/actions/auth.actions";
 
 export default function SignupForm() {
   const router = useRouter();
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-
-    const response = await fetch("http://localhost:3000/api/v1/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: formData.get("username"),
-        email: formData.get("email"),
-        password: formData.get("password"),
-      }),
+  const handleSubmit = async (data: FormData) => {
+    const user = await signupAction({
+      email: data.get("email") as string,
+      password: data.get("password") as string,
     });
 
-    if (response.ok) {
-      toast.success("Account created successfully");
-
-      return router.push("/signin");
-    }
-
-    const data = await response.json();
-
-    if (data.issues) {
-      data.issues.forEach((issue: any) => {
-        toast.error(issue.message);
-      });
-    } else {
-      toast.error(data.message);
+    if (user) {
+      toast.success("Signup successful");
+      // router.push("/signin");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full h-full">
+    <form action={handleSubmit} className="w-full h-full">
       <Card className="w-full h-full">
         <CardContent className="flex p-8 min-h-96 h-full">
           <div className="w-1/2 flex flex-col justify-between">
@@ -57,16 +35,6 @@ export default function SignupForm() {
           </div>
           <div className="w-1/2 flex items-center justify-center">
             <div className="w-[70%]">
-              <div className="mb-4">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="username"
-                  name="username"
-                  placeholder="Username"
-                  required
-                />
-              </div>
               <div className="mb-4">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -95,7 +63,7 @@ export default function SignupForm() {
                   <Label htmlFor="confirmPassword">Confirm password</Label>
                   <Input
                     id="confirmPassword"
-                    type="confirmPassword"
+                    type="password"
                     name="confirmPassword"
                     placeholder="Confirm password"
                     required

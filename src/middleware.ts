@@ -1,13 +1,25 @@
-import NextAuth from "next-auth";
-import { authConfig } from "./auth.config";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default NextAuth(authConfig).auth;
+const protectedRoutes = ["/dashboard"];
+const authRoutes = ["/signin", "/signup"];
+// const publicRoutes = ["/about", "/"];
 
-export const config = {
-  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-  matcher: [
-    "/((?!api|_next/static|_next/image|.*\\.png$).*)",
-    "/",
-    "/dashboard",
-  ],
-};
+export function middleware(request: NextRequest) {
+  const currentUser = request.cookies.get("id")?.value;
+
+  if (
+    protectedRoutes.includes(request.nextUrl.pathname) &&
+    (!currentUser || Date.now() > JSON.parse(currentUser).expiredAt)
+  ) {
+    request.cookies.delete("currentUser");
+    const response = NextResponse.redirect(new URL("/signin", request.url));
+    response.cookies.delete("currentUser");
+
+    return response;
+  }
+
+  if (authRoutes.includes(request.nextUrl.pathname) && currentUser) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+}
