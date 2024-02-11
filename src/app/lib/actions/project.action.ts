@@ -19,6 +19,7 @@ export async function createProjectAction({
   workspaceId: string;
   name: string;
 }) {
+  console.log("workspaceId", workspaceId);
   const { data } = await projectService.createProject({
     workspaceId,
     name,

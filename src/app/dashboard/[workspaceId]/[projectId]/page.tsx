@@ -3,10 +3,9 @@ import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function Workspace({ params }: any) {
-  console.log(params);
   const datasets = await getDatasetsAction({
     workspaceId: params.workspaceId,
-    projectId: params.projectid,
+    projectId: params.projectId,
   });
 
   return (
@@ -15,7 +14,7 @@ export default async function Workspace({ params }: any) {
         <div className="flex gap-6 md:gap-10 w-full justify-end">
           <Link
             className={buttonVariants({ variant: "outline" })}
-            href={`/dashboard/${params.workspaceId}/${params.projectid}/create-dataset`}
+            href={`/dashboard/${params.workspaceId}/${params.projectId}/create-dataset`}
           >
             Create dataset
           </Link>
@@ -23,7 +22,7 @@ export default async function Workspace({ params }: any) {
         <div>
           {datasets.map((dataset: any) => (
             <Link
-              href={`/dashboard/${params.workspaceId}/${params.projectid}/${dataset.id}`}
+              href={`/dashboard/${params.workspaceId}/${params.projectId}/${dataset.id}`}
               className={buttonVariants({ variant: "outline" })}
               key={dataset.id}
             >

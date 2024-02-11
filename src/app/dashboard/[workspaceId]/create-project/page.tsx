@@ -14,7 +14,7 @@ export default function CreateProject({ params }: any) {
       name: data.get("name") as string,
     });
 
-    redirect(`/dashboard/${params.workspaceId}/projects`);
+    redirect(`/dashboard/${params.workspaceId}`);
   };
   return (
     <main className="p-8 flex-grow">

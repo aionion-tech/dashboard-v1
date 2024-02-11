@@ -12,11 +12,11 @@ export default function CreateDataset({ params }: any) {
 
     await createDatasetAction({
       workspaceId: params.workspaceId,
-      projectId: params.projectid,
+      projectId: params.projectId,
       name: data.get("name") as string,
     });
 
-    redirect(`/dashboard/${params.workspaceId}/${params.projectid}`);
+    redirect(`/dashboard/${params.workspaceId}/${params.projectId}`);
   };
   return (
     <main className="p-8 flex-grow">
