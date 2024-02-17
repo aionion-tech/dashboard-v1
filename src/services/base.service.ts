@@ -14,7 +14,7 @@ export class BaseService {
       const cookieStore = cookies();
 
       const accessToken = cookieStore.get("accessToken")?.value;
-      const refreshToken = cookieStore.get("accessToken")?.value;
+      const refreshToken = cookieStore.get("refreshToken")?.value;
 
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
@@ -34,7 +34,7 @@ export class BaseService {
           originalRequest._retry = true;
           const cookieStore = cookies();
 
-          const refreshToken = cookieStore.get("accessToken")?.value;
+          const refreshToken = cookieStore.get("refreshToken")?.value;
 
           const res = await this.instance.post("/api/v1/auth/refresh", {
             refreshToken,

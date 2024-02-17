@@ -1,148 +1,117 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import ImageLabeling, { Annotation } from "@/components/ImageLabeling";
-
-const data = [
-  {
-    imageUrl:
-      "https://storage.googleapis.com/capturpwa.appspot.com/64285446de8e6e4305435684%2Fcptr-2d0c7dd7-f7d2-45ff-a9f7-1d25c064c28b.jpeg",
-    annotations: [],
-  },
-  {
-    imageUrl:
-      "https://storage.googleapis.com/capturpwa.appspot.com/64285446de8e6e4305435684%2Fcptr-6c51ebbf-a247-4164-9802-33b717aba615.jpeg",
-    annotations: [],
-  },
-  {
-    imageUrl:
-      "https://storage.googleapis.com/capturpwa.appspot.com/64285446de8e6e4305435684%2Fcptr-60bc90b4-4bf5-4e2a-9af8-2930d994aa80.jpeg",
-    annotations: [],
-  },
-  {
-    imageUrl:
-      "https://storage.googleapis.com/capturpwa.appspot.com/64285446de8e6e4305435684%2Fcptr-53d808a8-06d2-46a7-b859-331f9c9f0db4.jpeg",
-    annotations: [],
-  },
-  {
-    imageUrl:
-      "https://storage.googleapis.com/capturpwa.appspot.com/64285446de8e6e4305435684%2Fcptr-e4ba4604-8ff3-4d84-b7fd-1279e3a2e709.jpeg",
-    annotations: [],
-  },
-];
+import { Annotation } from "@/components/ImageLabeling";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { DropZone } from "@/components/DropZone";
+import { uploadImageAction } from "@/app/lib/actions/datasetItem.actions";
 
 interface ImageItem {
-  imageUrl: string;
+  name: string;
+  size: number;
+  imagePreview: string;
+  file: File;
   annotations: Annotation[];
 }
-export default function Project() {
-  const [labels, setLabels] = useState<string[]>([
-    "label-1",
-    "label-2",
-    "label-3",
-  ]);
-  const [activeLabel, setActiveLabel] = useState<string>("label-1");
+export default function Project({
+  params: { workspaceId, projectId, datasetId },
+}: {
+  params: {
+    workspaceId: string;
+    projectId: string;
+    datasetId: string;
+  };
+}) {
+  const [imageItems, setImageItems] = useState<Record<string, ImageItem>>({});
 
-  const [imageItems, setImageItems] = useState<ImageItem[]>(data);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const handleSubmit = async () => {
+    await Promise.all(
+      Object.values(imageItems).map(async (imageItem) => {
+        const formData = new FormData();
+        formData.append("photo", imageItem.file);
 
-  const [maskOverlayUrls, setMaskOverlayUrls] = useState<any[]>([]);
-  const [maskImages, setMaskImages] = useState<any[]>([]);
-  const [samResult, setSamResult] = useState<boolean[][] | null>(null);
+        await uploadImageAction({
+          formData,
+          workspaceId,
+          projectId,
+          datasetId,
+        });
 
-  const getSamResult = async ({
-    imageUrl,
-    bbox,
-  }: // centerPoint,
-  {
-    imageUrl: string;
-    bbox: number[];
-    // centerPoint: number[];
-  }) => {
-    const response = await fetch("http://localhost:5000/process", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ imageUrl, bbox }),
-    });
-
-    const data = await response.json();
-
-    setSamResult(data.result);
-    // console.log(data);
+        setImageItems((prev) => ({
+          ...prev,
+          [imageItem.name]: {
+            ...imageItem,
+          },
+        }));
+      })
+    );
   };
 
-  const handleAnnotationsChange = (newAnnotations: Annotation[]) => {
-    const newImageItems = [...imageItems];
-    newImageItems[selectedImageIndex].annotations = newAnnotations;
+  const handleSelectFiles = (files: File[]) => {
+    const newImageItems = files.reduce((acc, file) => {
+      acc[file.name] = {
+        name: file.name,
+        size: file.size,
+        imagePreview: URL.createObjectURL(file),
+        file: file,
+        annotations: [],
+      };
+      return acc;
+    }, {} as Record<string, ImageItem>);
+
     setImageItems(newImageItems);
   };
 
-  const handleNextImage = () => {
-    if (selectedImageIndex === imageItems.length - 1) {
-      return;
-    }
-
-    setMaskOverlayUrls([]);
-    setMaskImages([]);
-    setSamResult(null);
-    setSelectedImageIndex(selectedImageIndex + 1);
-  };
-
-  const handlePrevImage = () => {
-    if (selectedImageIndex === 0) {
-      return;
-    }
-
-    setMaskOverlayUrls([]);
-    setMaskImages([]);
-    setSamResult(null);
-    setSelectedImageIndex(selectedImageIndex - 1);
-  };
-
-  const handleSelectLabel = (lbl: string) => {
-    setActiveLabel(lbl);
-  };
+  if (!Object.keys(imageItems).length) {
+    return (
+      <main className="p-8 flex-grow">
+        <section className="flex justify-center">
+          <Card className="flex w-[50%]  flex-col justify-between items-center">
+            <CardHeader>
+              <CardTitle>Start uploading images</CardTitle>
+            </CardHeader>
+            <CardContent className="h-[100px]">
+              <DropZone handleSelectFiles={handleSelectFiles} />
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline">Upload</Button>
+            </CardFooter>
+          </Card>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="p-8 flex-grow">
-      <section className="flex w-full">
-        <div className="flex-grow">
-          <ImageLabeling
-            imageUrl={imageItems[selectedImageIndex].imageUrl}
-            annotations={imageItems[selectedImageIndex].annotations}
-            onAnnotationsChange={handleAnnotationsChange}
-            activeLabel={activeLabel}
-            maskOverlayUrls={maskOverlayUrls}
-            setMaskOverlayUrls={setMaskOverlayUrls}
-            maskImages={maskImages}
-            setMaskImages={setMaskImages}
-            samResult={samResult}
-            getSamResult={getSamResult}
-          />
+      <section className="flex flex-col">
+        <div className="flex gap-6 md:gap-10 w-full justify-end">
+          <Button variant="outline" onClick={handleSubmit}>
+            Submit
+          </Button>
         </div>
-        <div className="w-1/4">
-          <div className="flex mb-2">
-            <Button onClick={handlePrevImage} className="flex-grow  mr-2">
-              Prev
-            </Button>
-            <Button onClick={handleNextImage} className="flex-grow">
-              Next
-            </Button>
-          </div>
-          <div className="flex flex-col items-start">
-            {labels.map((label) => (
-              <Button
-                key={label}
-                onClick={handleSelectLabel.bind(null, label)}
-                className="mb-2 w-full"
-                variant={activeLabel === label ? "default" : "secondary"}
-              >
-                {label}
-              </Button>
-            ))}
-          </div>
+        <div className="flex flex-col">
+          {Object.values(imageItems).map((imageItem, index) => {
+            return (
+              <div key={imageItem.imagePreview} className="flex mb-4">
+                <img
+                  src={imageItem.imagePreview}
+                  alt=""
+                  className="h-[100px] w-[100px] object-cover mr-4"
+                />
+                <div>
+                  <p>{imageItem.name}</p>
+                  <p>{(imageItem.size / 1024).toFixed(2)}KB</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
     </main>
