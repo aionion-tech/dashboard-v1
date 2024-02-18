@@ -20,13 +20,14 @@ export default async function Workspace({ params }: any) {
         </div>
         <div>
           {projects.map((project: any) => (
-            <Link
-              href={`/dashboard/${params.workspaceId}/${project.id}`}
-              className={buttonVariants({ variant: "outline" })}
-              key={project.id}
-            >
-              {project.name}
-            </Link>
+            <div key={project.id}>
+              <Link
+                href={`/dashboard/${params.workspaceId}/${project.id}`}
+                className={buttonVariants({ variant: "outline" })}
+              >
+                {project.name}
+              </Link>
+            </div>
           ))}
         </div>
       </section>

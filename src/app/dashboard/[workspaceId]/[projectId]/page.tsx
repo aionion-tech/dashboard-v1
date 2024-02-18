@@ -21,13 +21,14 @@ export default async function Workspace({ params }: any) {
         </div>
         <div>
           {datasets.map((dataset: any) => (
-            <Link
-              href={`/dashboard/${params.workspaceId}/${params.projectId}/${dataset.id}`}
-              className={buttonVariants({ variant: "outline" })}
-              key={dataset.id}
-            >
-              {dataset.name}
-            </Link>
+            <div key={dataset.id}>
+              <Link
+                href={`/dashboard/${params.workspaceId}/${params.projectId}/${dataset.id}`}
+                className={buttonVariants({ variant: "outline" })}
+              >
+                {dataset.name}
+              </Link>
+            </div>
           ))}
         </div>
       </section>
