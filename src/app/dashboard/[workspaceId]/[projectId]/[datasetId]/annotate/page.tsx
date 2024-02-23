@@ -1,10 +1,17 @@
 import AnnotateComponent from "./components/annotateComponent";
 import { getImagesetItemsAction } from "@/app/lib/actions/datasetItem.actions";
-import { ImageItem } from "../components/imageUpload";
+
+interface Props {
+  params: {
+    workspaceId: string;
+    projectId: string;
+    datasetId: string;
+  };
+}
 
 export default async function AnnotatePage({
   params: { workspaceId, projectId, datasetId },
-}: any) {
+}: Props) {
   const {
     data,
   }: {

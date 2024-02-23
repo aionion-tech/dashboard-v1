@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import ImageLabeling, { Annotation } from "@/components/ImageLabeling";
-import { useRouter } from "next/navigation";
+import ImageLabeling from "@/components/ImageLabeling";
+import { Annotation } from "@/types/Annotation.interface";
 
 interface ImageItem {
   id: string;
@@ -10,8 +10,6 @@ interface ImageItem {
   annotations: Annotation[];
 }
 export default function AnnotateComponent({ images }: any) {
-  const router = useRouter();
-
   const [labels, setLabels] = useState<string[]>([
     "label-1",
     "label-2",
@@ -80,10 +78,6 @@ export default function AnnotateComponent({ images }: any) {
   const handleSelectLabel = (lbl: string) => {
     setActiveLabel(lbl);
   };
-
-  // if (imageItems.length === 0) {
-  //   return router.push(`/dashboard/${workspaceId}/${projectId}/${datasetId}`);
-  // }
 
   return (
     <main className="p-8 flex-grow">

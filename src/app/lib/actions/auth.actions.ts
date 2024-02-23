@@ -1,8 +1,8 @@
 "use server";
 import { authService } from "@/services";
 import { redirect } from "next/navigation";
-import { User } from "@/types/user";
 import { cookies } from "next/headers";
+import { User } from "@/types/user.interface";
 
 export async function loginAction({
   email,

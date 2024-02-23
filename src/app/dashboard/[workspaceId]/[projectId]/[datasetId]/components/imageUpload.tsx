@@ -1,33 +1,26 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Annotation } from "@/components/ImageLabeling";
 
 import { uploadImageAction } from "@/app/lib/actions/datasetItem.actions";
 import { v4 as uuid } from "uuid";
 import { DropZone } from "@/components/DropZone";
+import { ImageItem } from "@/types/ImageItem.interface";
+import { ImagesList } from "@/components/ImagesList";
 
-export interface ImageItem {
-  id: string;
-  name: string;
-  size: number;
-  imagePreview: string;
-  file: File | null;
-  annotations: Annotation[];
-  status: "pending" | "success" | "error";
-}
-
-export default function ImageUpload({
-  imageItems,
-  params: { workspaceId, projectId, datasetId },
-}: {
+interface Props {
   imageItems: Record<string, ImageItem>;
   params: {
     workspaceId: string;
     projectId: string;
     datasetId: string;
   };
-}) {
+}
+
+export default function ImageUpload({
+  imageItems,
+  params: { workspaceId, projectId, datasetId },
+}: Props) {
   const [imageItemsState, setImageItems] =
     useState<Record<string, ImageItem>>(imageItems);
 
@@ -101,24 +94,7 @@ export default function ImageUpload({
         </div>
         <div className="flex justify-between relative">
           <div className="flex-1">
-            {Object.values(imageItemsState).map((imageItem, index) => {
-              return (
-                <div key={imageItem.imagePreview} className="flex mb-4">
-                  <img
-                    src={imageItem.imagePreview}
-                    alt=""
-                    className={`h-[100px] w-[100px] object-cover mr-4 ${
-                      imageItem.status === "success"
-                        ? "opacity-100"
-                        : "opacity-50"
-                    }`}
-                  />
-                  <div>
-                    <p>{imageItem.name}</p>
-                  </div>
-                </div>
-              );
-            })}
+            <ImagesList imageItemsState={imageItemsState} />
           </div>
           <div className="flex-1 sticky top-20 self-start">
             <DropZone handleSelectFiles={handleSelectFiles} />

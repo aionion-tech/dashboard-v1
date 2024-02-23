@@ -1,4 +1,5 @@
 "use client";
+import { Annotation } from "@/types/Annotation.interface";
 import React, { useState, useEffect } from "react";
 import { Stage, Layer, Image, Text, Rect } from "react-konva";
 import useImage from "use-image";
@@ -31,18 +32,6 @@ const createMaskOverlay = (mask: any, width: any, height: any) => {
 
   return canvas.toDataURL();
 };
-
-export interface Annotation {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  width: number;
-  height: number;
-  centerX: number;
-  centerY: number;
-  label: string;
-}
 
 interface Props {
   imageUrl: string;
@@ -161,7 +150,7 @@ const ImageCanvas: React.FC<Props> = ({
   }, [samResult, image]);
 
   useEffect(() => {
-    if (!maskOverlayUrls) return;
+    if (!maskOverlayUrls || !maskOverlayUrls.length) return;
 
     const image = new window.Image();
     image.src = maskOverlayUrls[maskOverlayUrls.length - 1];

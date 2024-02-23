@@ -1,5 +1,6 @@
 import { getImagesetItemsAction } from "@/app/lib/actions/datasetItem.actions";
-import ImageUpload, { ImageItem } from "./components/imageUpload";
+import ImageUpload from "./components/imageUpload";
+import { ImageItem } from "@/types/ImageItem.interface";
 
 export default async function Project({
   params: { workspaceId, projectId, datasetId },
