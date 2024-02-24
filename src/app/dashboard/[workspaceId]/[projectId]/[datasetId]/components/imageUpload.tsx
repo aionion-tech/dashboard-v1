@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 import { uploadImageAction } from "@/app/lib/actions/datasetItem.actions";
 import { v4 as uuid } from "uuid";
 import { DropZone } from "@/components/DropZone";
 import { ImageItem } from "@/types/ImageItem.interface";
 import { ImagesList } from "@/components/ImagesList";
+import Link from "next/link";
 
 interface Props {
   imageItems: Record<string, ImageItem>;
@@ -24,9 +25,7 @@ export default function ImageUpload({
   const [imageItemsState, setImageItems] =
     useState<Record<string, ImageItem>>(imageItems);
 
-  const [showUpload, setShowUpload] = useState(
-    Object.keys(imageItems).length === 0
-  );
+  const [pendingExist, setPendingExist] = useState(false);
 
   const handleSubmit = async () => {
     await Promise.all(
@@ -54,8 +53,7 @@ export default function ImageUpload({
           }));
         })
     );
-
-    setShowUpload(false);
+    setPendingExist(false);
   };
 
   const handleSelectFiles = (files: File[]) => {
@@ -74,21 +72,26 @@ export default function ImageUpload({
     }, {} as Record<string, ImageItem>);
 
     setImageItems((prev) => ({ ...prev, ...newImageItems }));
+    setPendingExist(true);
   };
 
   return (
     <main className="p-8 flex-grow">
       <section className="flex flex-col">
         <div className="flex gap-6 md:gap-10 w-full justify-end mb-8">
+          <Link
+            className={buttonVariants({
+              variant: "secondary",
+            })}
+            href={`/dashboard/${workspaceId}/${projectId}/${datasetId}/annotate`}
+          >
+            Start Annotation
+          </Link>
           <Button
             variant="outline"
-            onClick={() => {
-              setShowUpload(!showUpload);
-            }}
+            onClick={handleSubmit}
+            disabled={!pendingExist}
           >
-            Add images
-          </Button>
-          <Button variant="outline" onClick={handleSubmit}>
             Submit
           </Button>
         </div>
