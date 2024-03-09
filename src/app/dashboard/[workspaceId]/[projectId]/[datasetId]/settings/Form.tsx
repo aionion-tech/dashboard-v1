@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FieldArray } from "./FieldArray";
 
-interface Label {
+export interface Label {
   name: string;
   color: string;
   prompts: string[];
@@ -19,12 +19,18 @@ export interface FormValues {
   labels: Label[];
 }
 
-export const Form = () => {
+interface Props {
+  submitSettings: (data: FormValues) => Promise<FormValues>;
+  settings: FormValues;
+}
+
+export const Form = ({ submitSettings, settings }: Props) => {
+  console.log(settings);
   const { control, register, setValue, getValues, handleSubmit } =
     useForm<FormValues>();
 
-  const submit = (data: FormValues) => {
-    console.log(data);
+  const submit = async (data: FormValues) => {
+    const updated = await submitSettings(data);
   };
 
   return (
